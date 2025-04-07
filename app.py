@@ -11,8 +11,21 @@ from bs4 import BeautifulSoup
 
 app = FastAPI()
 
+def load_model():
+    MODEL_DIR = "all-MiniLM-L6-v2"
+    FILE_ID = "1TlFk7WRL0vNNWVOTq8BpQmxwuaBTjJt7"  # ✅ your correct ID
+    ZIP_FILE = "model.zip"
+
+    if not os.path.exists(MODEL_DIR):
+        st.info("📥 Downloading model from Google Drive...")
+        gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", ZIP_FILE, quiet=False)
+        with zipfile.ZipFile(ZIP_FILE, 'r') as zip_ref:
+            zip_ref.extractall(".")
+        os.remove(ZIP_FILE)
+
+    return SentenceTransformer(MODEL_DIR)
 # Load model and data
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+model = load_model()
 df = pd.read_csv('shl_assessments_data.csv')
 corpus_embeddings = np.load('corpus_embeddings.npy')
 
